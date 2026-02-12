@@ -33,9 +33,9 @@
 </head>
 
 <body>
-    <h1>WebSocket Prueba Flexi</h1>
-    <h2 id="estatus" class="status-off">Conectando...</h2>
-    <form action="message_form">
+    <h1>WebSocket Prueba demo</h1>
+    <h2 id="estatus" class="status-on">Conectando...</h2>
+    <form id="message_form">
         <input type="text" name="" id="inputMessage" placeholder="Escribe tu mensaje aquí" required />
         <button type="submit">Enviar Mensaje</button>
     </form>
@@ -55,19 +55,29 @@
     };
 
     ws.addEventListener('open', () => {
-        estatus_el.textContent = 'Conectado al servidor WebSocket';
+        estatus_el.textContent = 'Conectado al servidor WebSocket en ws://localhost:8080';
         estatus_el.className = 'status-on';
-        appendLog('Sistema', 'Conexión establecida con el servidor WebSocket');
+        appendLog('[Sistema]', 'Conexión establecida con el servidor WebSocket puerto 8080');
     });
 
     ws.addEventListener('message', (event) => {
-
+        appendLog('[Recibido]', event.data);
     });
 
     ws.addEventListener('close', () => {
         estatus_el.textContent = 'Desconectado del servidor WebSocket';
         estatus_el.className = 'status-off';
-        appendLog('Sistema', 'Conexión cerrada con el servidor WebSocket');
+        appendLog('[Sistema]', 'Conexión cerrada con el servidor WebSocket');
+    });
+    document.getElementById('message_form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (ws.readyState !== WebSocket.OPEN) {
+            appendLog('[Error]', 'No se puede enviar el mensaje. La conexión no está abierta.');
+        }
+        const message = inputMessage.value.trim();
+        ws.send(message);
+        appendLog('[Enviado]', message);
+        inputMessage.value = '';
     });
 </script>
 
